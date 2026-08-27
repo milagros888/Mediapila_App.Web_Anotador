@@ -67,6 +67,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // Si viene con el hash #registro, abrir directamente la vista de crear cuenta
     if (window.location.hash === '#registro') {
         mostrarVistaRegistro();
+    } else {
+        mostrarVistaLogin();
+    }
+});
+
+// Escuchar cambios de hash en la URL
+window.addEventListener('hashchange', () => {
+    if (window.location.hash === '#registro') {
+        mostrarVistaRegistro();
+    } else {
+        mostrarVistaLogin();
     }
 });
 

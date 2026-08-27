@@ -92,6 +92,19 @@ body {
     color: var(--color-componentes) !important;
 }
 
+/* Botón con borde adaptable al tema */
+.btn-outline-tema {
+    border: 1px solid var(--color-componentes) !important;
+    color: var(--color-componentes) !important;
+    background: transparent;
+    transition: all 0.2s ease;
+}
+
+.btn-outline-tema:hover {
+    background-color: var(--color-componentes) !important;
+    color: var(--color-blanco) !important;
+}
+
 /* Botones circulares (Avatar / Tema) */
 .avatar-btn {
     background-color: var(--color-componentes) !important;
@@ -286,6 +299,16 @@ body.modo-oscuro .btn-secondary {
 
 body.modo-oscuro .btn-secondary:hover {
     background-color: rgba(255, 255, 255, 0.18) !important;
+}
+
+body.modo-oscuro .btn-outline-tema {
+    border: 1px solid var(--color-texto-oscuro) !important;
+    color: var(--color-texto-oscuro) !important;
+}
+
+body.modo-oscuro .btn-outline-tema:hover {
+    background-color: var(--color-canva-hoja) !important;
+    color: var(--color-texto-oscuro) !important;
 }
 
 body.modo-oscuro .badge-invitado {
