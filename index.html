@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tu Espacio — Tu lugar en el mundo</title>
+    <meta name="description" content="Aplicación web minimalista de toma de notas y gestión de tareas, diseñada para la concentración y accesibilidad.">
+
+    <!-- BOOTSTRAP 5 + ICONOS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- LIBRERÍA QUILL (EDITOR DE TEXTO) -->
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
+
+    <!-- ESTILOS PERSONALIZADOS -->
+    <link href="assets/css/styles.css" rel="stylesheet">
+</head>
+
+<body class="vh-100 d-flex flex-column overflow-hidden">
+
+    <!-- ALERTA FLOTANTE DE ESTADO -->
+    <div id="alerta-bienvenida"
+        class="alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 d-none shadow z-3"
+        role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i> ¡Iniciaste sesión con éxito! Bienvenido a tu espacio.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- ENCABEZADO SUPERIOR -->
+    <header class="menu-superior px-3 px-md-4 py-2 d-flex justify-content-between align-items-center">
+        <!-- LOGO CARPINCHO -->
+        <div class="d-flex align-items-center gap-2">
+            <a href="index.html" class="text-decoration-none">
+                <img src="./assets/img/logos/claro-cerca.png" alt="Logo Tu Espacio" id="logo-app" class="img-fluid">
+            </a>
+        </div>
+
+        <!-- ACCIONES SUPERIORES -->
+        <div class="d-flex align-items-center gap-2">
+            <!-- DISTINTIVO DE MODO INVITADO -->
+            <span id="badge-estado-usuario" class="badge-invitado d-flex align-items-center gap-1 shadow-sm" title="Modo Invitado (Máximo 1 nota)">
+                <i class="bi bi-person-fill"></i>
+                <span class="d-none d-sm-inline">Invitado (1 nota máx.)</span>
+            </span>
+
+            <!-- BOTÓN AÑADIR NUEVA NOTA -->
+            <button class="btn btn-oscuro rounded-3 px-3 py-1 shadow-sm fw-semibold" id="btn-anadir-nota">
+                <i class="bi bi-plus-lg me-1"></i> Añadir nuevo +
+            </button>
+
+            <!-- BOTÓN CAMBIO DE TEMA (CLARO / OSCURO) -->
+            <button id="btn-luna"
+                class="btn avatar-btn rounded-circle d-flex align-items-center justify-content-center fs-5 shadow-sm"
+                title="Cambiar tema">
+                <i class="bi bi-moon"></i>
+            </button>
+
+            <!-- MENÚ DE USUARIO / PERFIL -->
+            <div class="dropdown">
+                <button id="btn-perfil"
+                    class="btn avatar-btn rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm dropdown-toggle position-relative"
+                    type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Opciones de perfil">
+                    <i class="bi bi-person" id="avatar-actual-icono"></i>
+                    <img src="" id="avatar-actual-img"
+                        class="rounded-circle d-none w-100 h-100 object-fit-cover position-absolute top-0 start-0"
+                        alt="Avatar actual">
+                </button>
+
+                <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 mt-2" aria-labelledby="btn-perfil"
+                    id="menu-usuario-opciones">
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="login.html" id="opcion-login">
+                            <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión / Registro
+                        </a>
+                    </li>
+
+                    <li>
+                        <button class="dropdown-item d-none d-flex align-items-center gap-2 py-2" type="button"
+                            id="opcion-cambiar-foto" data-bs-toggle="modal" data-bs-target="#modalAvatares">
+                            <i class="bi bi-image"></i> Cambiar avatar
+                        </button>
+                    </li>
+
+                    <li id="divisor-menu" class="dropdown-divider d-none my-1"></li>
+
+                    <li>
+                        <button class="dropdown-item text-danger d-none d-flex align-items-center gap-2 py-2" type="button"
+                            id="opcion-logout">
+                            <i class="bi bi-box-arrow-left"></i> Cerrar sesión
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <main class="contenedor-principal flex-grow-1 row g-0 w-100 overflow-hidden">
+
+        <!-- BARRA DE HERRAMIENTAS LATERAL (BOTÓN OCULTAR/MOSTRAR) -->
+        <div class="barra-herramientas col-auto d-flex flex-column justify-content-between align-items-center p-2">
+            <button id="btn-ojo" class="btn btn-icono fs-5" title="Mostrar/Ocultar barra lateral">
+                <i id="icono-ojo" class="bi bi-eye"></i>
+            </button>
+        </div>
+
+        <!-- BARRA LATERAL (TUS NOTAS) -->
+        <aside id="menu-lateral" class="barra-lateral col-12 col-md-3 p-3 d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="fs-5 fw-bold mb-0">Tus notas</h3>
+                <button id="btn-eliminar-todas" class="btn btn-nota-accion text-danger d-none" title="Eliminar todas las notas" aria-label="Eliminar todas las notas">
+                    <i class="bi bi-trash3 fs-6"></i>
+                </button>
+            </div>
+            <ul id="lista-notas" class="list-unstyled flex-grow-1 mb-0 overflow-auto">
+                <!-- Se generan dinámicamente con JavaScript -->
+            </ul>
+        </aside>
+
+        <!-- LIENZO CENTRAL PARA EL EDITOR -->
+        <section id="lienzo-central" class="lienzo-central col flex-grow-1 p-3 p-md-4 d-none overflow-auto">
+            <div id="area-editor" class="editor-texto h-100 p-3 p-md-4 rounded-4 shadow-sm d-flex flex-column gap-2">
+                <div id="barra-quill"></div>
+                <div id="entrada-texto" class="flex-grow-1 w-100"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL: SELECCIÓN DE AVATAR -->
+    <div class="modal fade" id="modalAvatares" tabindex="-1" aria-labelledby="modalAvataresLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="modalAvataresLabel">Selecciona tu avatar</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted small mb-3">Elige uno de los 5 avatares disponibles de carpincho:</p>
+                    <div class="row row-cols-5 g-2 justify-content-center" id="contenedor-opciones-avatar">
+                        <div class="col text-center">
+                            <button type="button" class="btn p-1 border rounded-circle btn-opcion-avatar"
+                                data-avatar="avatar1.png">
+                                <img src="./assets/img/avatars/avatar1.png" class="img-fluid rounded-circle" alt="Avatar 1">
+                            </button>
+                        </div>
+                        <div class="col text-center">
+                            <button type="button" class="btn p-1 border rounded-circle btn-opcion-avatar"
+                                data-avatar="avatar2.png">
+                                <img src="./assets/img/avatars/avatar2.png" class="img-fluid rounded-circle" alt="Avatar 2">
+                            </button>
+                        </div>
+                        <div class="col text-center">
+                            <button type="button" class="btn p-1 border rounded-circle btn-opcion-avatar"
+                                data-avatar="avatar3.png">
+                                <img src="./assets/img/avatars/avatar3.png" class="img-fluid rounded-circle" alt="Avatar 3">
+                            </button>
+                        </div>
+                        <div class="col text-center">
+                            <button type="button" class="btn p-1 border rounded-circle btn-opcion-avatar"
+                                data-avatar="avatar4.png">
+                                <img src="./assets/img/avatars/avatar4.png" class="img-fluid rounded-circle" alt="Avatar 4">
+                            </button>
+                        </div>
+                        <div class="col text-center">
+                            <button type="button" class="btn p-1 border rounded-circle btn-opcion-avatar"
+                                data-avatar="avatar5.png">
+                                <img src="./assets/img/avatars/avatar5.png" class="img-fluid rounded-circle" alt="Avatar 5">
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: EDITAR TÍTULO DE NOTA -->
+    <div class="modal fade" id="modalEditarTitulo" tabindex="-1" aria-labelledby="modalEditarTituloLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow rounded-4 p-2">
+                <div class="modal-header border-0 pb-0">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-pencil-square fs-4"></i>
+                        <h5 class="modal-title fw-bold" id="modalEditarTituloLabel">Editar título de la nota</h5>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <form id="form-editar-titulo">
+                    <div class="modal-body py-3">
+                        <label for="input-nuevo-titulo" class="form-label small fw-bold etiqueta-input">Título de la nota</label>
+                        <input type="text" class="form-control rounded-3 py-2" id="input-nuevo-titulo" required maxlength="60" placeholder="Escribe el título aquí...">
+                    </div>
+                    <div class="modal-footer border-0 pt-0 d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-secondary rounded-3 px-3 py-2" data-bs-dismiss="modal">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-oscuro rounded-3 px-3 py-2 fw-semibold">
+                            Guardar cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ELIMINAR NOTA -->
+    <div class="modal fade" id="modalEliminarNota" tabindex="-1" aria-labelledby="modalEliminarNotaLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow rounded-4 p-2">
+                <div class="modal-header border-0 pb-0">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-trash3 text-danger fs-4"></i>
+                        <h5 class="modal-title fw-bold" id="modalEliminarNotaLabel">¿Eliminar esta nota?</h5>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body py-3">
+                    <p class="mb-0">
+                        ¿Estás seguro de que deseas eliminar esta nota permanentemente? Esta acción no se puede deshacer.
+                    </p>
+                </div>
+                <div class="modal-footer border-0 pt-0 d-flex justify-content-end gap-2">
+                    <button type="button" class="btn btn-secondary rounded-3 px-3 py-2" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button type="button" id="btn-confirmar-eliminar" class="btn btn-danger rounded-3 px-3 py-2 fw-semibold">
+                        <i class="bi bi-trash me-1"></i> Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: LÍMITE DE NOTAS PARA MODO INVITADO -->
+    <div class="modal fade" id="modalLimiteInvitado" tabindex="-1" aria-labelledby="modalLimiteInvitadoLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow rounded-4 p-2">
+                <div class="modal-header border-0 pb-0">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-info-circle fs-3 text-warning"></i>
+                        <h5 class="modal-title fw-bold" id="modalLimiteInvitadoLabel">Límite de Notas para Invitados</h5>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body py-3">
+                    <p class="mb-2">
+                        ¡Hola! Como usuario <strong>invitado</strong> tienes acceso directo e inmediato con un límite de <strong>1 nota activa</strong> para que puedas escribir sin obstáculos.
+                    </p>
+                    <p class="text-muted small mb-0">
+                        Para crear <strong>notas ilimitadas</strong>, organizar tus ideas en múltiples tableros y personalizar tu avatar, inicia sesión o crea una cuenta.
+                    </p>
+                </div>
+                <div class="modal-footer border-0 pt-0 d-flex flex-column flex-sm-row gap-2">
+                    <button type="button" class="btn btn-secondary rounded-3 px-3 py-2 w-100 w-sm-auto order-2 order-sm-1" data-bs-dismiss="modal">
+                        Continuar con mi nota
+                    </button>
+                    <a href="login.html#registro" class="btn btn-oscuro rounded-3 px-3 py-2 w-100 w-sm-auto order-1 order-sm-2 text-center text-decoration-none fw-semibold">
+                        <i class="bi bi-person-plus-fill me-1"></i> Crear Cuenta / Iniciar Sesión
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ELIMINAR TODAS LAS NOTAS -->
+    <div class="modal fade" id="modalEliminarTodas" tabindex="-1" aria-labelledby="modalEliminarTodasLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow rounded-4 p-2">
+                <div class="modal-header border-0 pb-0">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-exclamation-triangle text-danger fs-4"></i>
+                        <h5 class="modal-title fw-bold" id="modalEliminarTodasLabel">¿Eliminar todas las notas?</h5>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body py-3">
+                    <p class="mb-0">
+                        ¿Estás seguro de que deseas eliminar todas las notas existentes? Esta acción no se puede deshacer y vaciará tu lista por completo.
+                    </p>
+                </div>
+                <div class="modal-footer border-0 pt-0 d-flex justify-content-end gap-2">
+                    <button type="button" class="btn btn-secondary rounded-3 px-3 py-2" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button type="button" id="btn-confirmar-eliminar-todas" class="btn btn-danger rounded-3 px-3 py-2 fw-semibold">
+                        <i class="bi bi-trash3 me-1"></i> Eliminar todas
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
+
+</html>

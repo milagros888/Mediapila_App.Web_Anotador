@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso — Tu Espacio</title>
+    <meta name="description" content="Ingresa o crea tu cuenta en Tu Espacio para gestionar tus notas y tableros personalizados.">
+
+    <!-- BOOTSTRAP 5 + ICONOS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- ESTILOS PERSONALIZADOS -->
+    <link href="assets/css/styles.css" rel="stylesheet">
+</head>
+
+<body class="vh-100 d-flex align-items-center justify-content-center cuerpo-login p-3">
+
+    <!-- TARJETA DE ACCESO -->
+    <div class="card p-4 rounded-4 shadow border-0 tarjeta-login">
+        <!-- LOGO Y SALUDO -->
+        <div class="text-center mb-4">
+            <a href="index.html">
+                <img src="./assets/img/logos/claro-cerca.png" alt="Logo Tu Espacio" id="logo-app" class="logo-login img-fluid">
+            </a>
+            <h2 class="fs-4 fw-bold titulo-bienvenida mt-3" id="titulo-pantalla">¡Te damos la bienvenida!</h2>
+            <p class="text-muted small mb-0" id="subtitulo-pantalla">Organiza tus ideas en tu lugar en el mundo.</p>
+        </div>
+
+        <!-- FORMULARIO 1: INICIAR SESIÓN -->
+        <form id="formulario-login">
+            <!-- CORREO O NOMBRE DE USUARIO -->
+            <div class="mb-3">
+                <label for="identificador" class="form-label small fw-bold etiqueta-input">Correo o nombre de usuario</label>
+                <input type="text" class="form-control rounded-3 py-2" id="identificador" placeholder="ejemplo@correo.com o tu usuario" required>
+            </div>
+
+            <!-- CONTRASEÑA -->
+            <div class="mb-3">
+                <label for="contrasena" class="form-label small fw-bold etiqueta-input">Contraseña</label>
+                <input type="password" class="form-control rounded-3 py-2" id="contrasena" placeholder="••••••••" required>
+            </div>
+
+            <!-- RECORDARME Y RECUPERACIÓN -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="recordarme">
+                    <label class="form-check-label small text-muted" for="recordarme">
+                        Recordarme
+                    </label>
+                </div>
+                <a href="#" id="btn-olvide" class="small link-accion">
+                    ¿Olvidaste tu contraseña?
+                </a>
+            </div>
+
+            <!-- BOTÓN INICIAR SESIÓN -->
+            <button type="submit" class="btn btn-oscuro w-100 rounded-3 py-2 mb-3 shadow-sm fw-semibold">
+                <i class="bi bi-box-arrow-in-right me-1"></i> Iniciar Sesión
+            </button>
+
+            <!-- BOTÓN GOOGLE -->
+            <button type="button" id="btn-google"
+                class="btn btn-danger text-white w-100 rounded-3 py-2 mb-3 d-flex align-items-center justify-content-center gap-2 small fw-semibold shadow-sm">
+                <i class="bi bi-google"></i> Iniciar sesión con Google
+            </button>
+
+            <!-- BOTÓN INVITADO -->
+            <button type="button" id="btn-invitado"
+                class="btn btn-link w-100 text-decoration-none small fw-semibold boton-invitado mb-3">
+                <i class="bi bi-arrow-left me-1"></i> Continuar como usuario invitado
+            </button>
+
+            <!-- CAMBIO A REGISTRO -->
+            <div class="text-center border-top pt-3">
+                <p class="small mb-0 text-muted">
+                    ¿No tienes una cuenta? <a href="#" id="link-ir-registro" class="link-accion ms-1">Crea una aquí</a>
+                </p>
+            </div>
+        </form>
+
+        <!-- FORMULARIO 2: CREAR CUENTA (REGISTRO) -->
+        <form id="formulario-registro" class="d-none">
+            <!-- NOMBRE DE USUARIO -->
+            <div class="mb-3">
+                <label for="reg-nombre" class="form-label small fw-bold etiqueta-input">Nombre de usuario</label>
+                <input type="text" class="form-control rounded-3 py-2" id="reg-nombre" placeholder="Tu nombre o apodo" required>
+            </div>
+
+            <!-- CORREO ELECTRÓNICO -->
+            <div class="mb-3">
+                <label for="reg-correo" class="form-label small fw-bold etiqueta-input">Correo electrónico</label>
+                <input type="email" class="form-control rounded-3 py-2" id="reg-correo" placeholder="ejemplo@correo.com" required>
+            </div>
+
+            <!-- CONTRASEÑA -->
+            <div class="mb-3">
+                <label for="reg-contrasena" class="form-label small fw-bold etiqueta-input">Contraseña</label>
+                <input type="password" class="form-control rounded-3 py-2" id="reg-contrasena" placeholder="••••••••" minlength="4" required>
+            </div>
+
+            <!-- REPETIR CONTRASEÑA -->
+            <div class="mb-3">
+                <label for="reg-confirmar" class="form-label small fw-bold etiqueta-input">Repetir contraseña</label>
+                <input type="password" class="form-control rounded-3 py-2" id="reg-confirmar" placeholder="••••••••" minlength="4" required>
+                <div id="error-password" class="text-danger small mt-1 d-none">
+                    <i class="bi bi-exclamation-circle me-1"></i> Las contraseñas no coinciden.
+                </div>
+            </div>
+
+            <!-- BOTÓN CONFIRMAR REGISTRO -->
+            <button type="submit" class="btn btn-oscuro w-100 rounded-3 py-2 mb-3 shadow-sm fw-semibold">
+                <i class="bi bi-person-plus-fill me-1"></i> Crear Cuenta
+            </button>
+
+            <!-- CAMBIO A LOGIN -->
+            <div class="text-center border-top pt-3">
+                <p class="small mb-0 text-muted">
+                    ¿Ya tienes una cuenta? <a href="#" id="link-ir-login" class="link-accion ms-1">Inicia sesión aquí</a>
+                </p>
+            </div>
+        </form>
+
+    </div>
+
+    <!-- BOOTSTRAP BUNDLE JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SCRIPT DE LOGIN Y REGISTRO -->
+    <script src="assets/js/login.js"></script>
+</body>
+
+</html>

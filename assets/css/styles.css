@@ -1,0 +1,349 @@
+/* ==========================================================================
+   1. PALETAS Y VARIABLES DE COLOR (Tema Claro / Modo Oscuro)
+   ========================================================================== */
+:root {
+    --color-fondo-global: #E3D8CE;
+    --color-canva-hoja: #F9F2E2;
+    --color-menu-superior: #B1C0AA;
+    --color-menu-lateral: #9AA894;
+    --color-componentes: #475245;
+    --color-blanco: #FFFFFF;
+    --color-borde-sutil: rgba(0, 0, 0, 0.08);
+}
+
+body.modo-oscuro {
+    --color-fondo-global: #393839;
+    --color-canva-hoja: #4B4B4B;
+    --color-menu-superior: #7A67B1;
+    --color-menu-lateral: #584C7B;
+    --color-componentes: #22221D;
+    --color-borde-sutil: rgba(255, 255, 255, 0.08);
+
+    /* Colores anti-saturación para cuidar la vista */
+    --color-texto-oscuro: #D1C9E3;
+    --color-iconos-quill: #BDB5D0;
+}
+
+/* ==========================================================================
+   2. ESTILOS GENERALES Y ESTRUCTURA
+   ========================================================================== */
+body {
+    background-color: var(--color-fondo-global);
+    color: var(--color-componentes);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Encabezado */
+.menu-superior {
+    background-color: var(--color-menu-superior);
+    color: var(--color-componentes);
+    border-bottom: 1px solid var(--color-borde-sutil);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Barra lateral y herramientas */
+.barra-lateral {
+    background-color: var(--color-menu-lateral);
+    color: var(--color-componentes);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    overflow-y: auto;
+}
+
+.barra-herramientas {
+    background-color: var(--color-menu-lateral);
+    border-right: 1px solid var(--color-borde-sutil);
+    z-index: 10;
+    transition: background-color 0.3s ease;
+}
+
+.lienzo-central {
+    background-color: var(--color-fondo-global);
+    transition: background-color 0.3s ease;
+}
+
+/* ==========================================================================
+   3. COMPONENTES Y BOTONES
+   ========================================================================== */
+/* Botón principal de acción */
+.btn-oscuro {
+    background-color: var(--color-componentes) !important;
+    color: var(--color-blanco) !important;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.btn-oscuro:hover {
+    background-color: #353E34 !important;
+    color: var(--color-blanco) !important;
+    transform: translateY(-1px);
+}
+
+/* Botón secundario estilizado */
+.btn-secondary {
+    background-color: rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    color: var(--color-componentes) !important;
+    transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+    background-color: rgba(0, 0, 0, 0.18) !important;
+    color: var(--color-componentes) !important;
+}
+
+/* Botones circulares (Avatar / Tema) */
+.avatar-btn {
+    background-color: var(--color-componentes) !important;
+    color: var(--color-blanco) !important;
+    width: 40px;
+    height: 40px;
+    border: none;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+}
+
+.avatar-btn:hover {
+    transform: scale(1.05);
+}
+
+#btn-perfil i {
+    font-size: 1.25rem;
+}
+
+/* Botón icono de herramientas */
+.btn-icono {
+    color: var(--color-componentes) !important;
+    border: none;
+    background: transparent;
+    transition: color 0.3s ease, opacity 0.2s ease;
+}
+
+.btn-icono:hover {
+    opacity: 0.8;
+}
+
+/* ==========================================================================
+   4. LISTA DE NOTAS
+   ========================================================================== */
+.nota-item {
+    color: var(--color-componentes);
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.3s ease, transform 0.15s ease;
+    user-select: none;
+}
+
+.nota-item:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+.nota-item.activa {
+    background-color: #808b7b !important;
+    color: var(--color-blanco) !important;
+    font-weight: 600;
+}
+
+.nota-item .titulo-nota {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.btn-nota-accion {
+    color: inherit;
+    opacity: 0.6;
+    background: transparent;
+    border: none;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.btn-nota-accion:hover {
+    opacity: 1;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn-nota-accion:hover .bi-trash {
+    color: #dc3545 !important;
+}
+
+/* Clase de utilidad para colapsar barra lateral */
+.menu-oculto {
+    display: none !important;
+}
+
+/* ==========================================================================
+   5. EDITOR DE TEXTO (CANVAS & QUILL)
+   ========================================================================== */
+.editor-texto {
+    background-color: var(--color-canva-hoja);
+    color: var(--color-componentes);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Logo de la aplicación */
+#logo-app {
+    height: 58px;
+    width: auto;
+    object-fit: contain;
+}
+
+/* Integración y limpieza de Quill Editor */
+.ql-toolbar.ql-snow,
+.ql-container.ql-snow {
+    border: none !important;
+    font-family: inherit !important;
+}
+
+.ql-editor {
+    background-color: transparent;
+    color: var(--color-componentes);
+    font-size: 1.05rem;
+    line-height: 1.7;
+    transition: color 0.3s ease;
+    padding: 1rem 0.5rem;
+}
+
+.ql-editor.ql-blank::before {
+    color: var(--color-componentes) !important;
+    opacity: 0.5;
+    font-style: normal !important;
+}
+
+/* ==========================================================================
+   6. PANTALLA DE LOGIN Y MODALES
+   ========================================================================== */
+.cuerpo-login {
+    background-color: var(--color-menu-superior);
+}
+
+.tarjeta-login,
+.modal-content {
+    background-color: var(--color-menu-lateral);
+    color: var(--color-componentes);
+}
+
+.tarjeta-login {
+    max-width: 420px;
+    width: 90%;
+}
+
+.logo-login {
+    height: 70px;
+    object-fit: contain;
+}
+
+.titulo-bienvenida,
+.etiqueta-input,
+.boton-invitado {
+    color: var(--color-componentes) !important;
+}
+
+/* Enlaces de alternancia login/registro */
+.link-accion {
+    color: var(--color-componentes) !important;
+    text-decoration: none;
+    font-weight: 700;
+    transition: opacity 0.2s ease;
+}
+
+.link-accion:hover {
+    opacity: 0.8;
+    text-decoration: underline !important;
+}
+
+/* ==========================================================================
+   7. MODAL Y BADGE DE MODO INVITADO
+   ========================================================================== */
+.badge-invitado {
+    background-color: rgba(0, 0, 0, 0.08);
+    color: var(--color-componentes);
+    font-size: 0.8rem;
+    padding: 0.35rem 0.65rem;
+    border-radius: 50rem;
+}
+
+/* ==========================================================================
+   8. ESTILOS PARA MODO OSCURO
+   ========================================================================== */
+body.modo-oscuro .nota-item,
+body.modo-oscuro .avatar-btn,
+body.modo-oscuro #btn-ojo,
+body.modo-oscuro .ql-editor,
+body.modo-oscuro .badge-invitado,
+body.modo-oscuro .modal-content,
+body.modo-oscuro .etiqueta-input,
+body.modo-oscuro .titulo-bienvenida,
+body.modo-oscuro .boton-invitado {
+    color: var(--color-texto-oscuro) !important;
+}
+
+body.modo-oscuro .btn-secondary {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: var(--color-texto-oscuro) !important;
+}
+
+body.modo-oscuro .btn-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.18) !important;
+}
+
+body.modo-oscuro .badge-invitado {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+body.modo-oscuro .btn-oscuro {
+    color: var(--color-texto-oscuro) !important;
+}
+
+body.modo-oscuro .btn-oscuro:hover {
+    background-color: #11110E !important;
+}
+
+body.modo-oscuro .nota-item.activa {
+    background-color: var(--color-canva-hoja) !important;
+    color: var(--color-texto-oscuro) !important;
+}
+
+body.modo-oscuro .ql-editor.ql-blank::before {
+    color: var(--color-texto-oscuro) !important;
+    opacity: 0.4;
+}
+
+body.modo-oscuro .ql-snow .ql-stroke {
+    stroke: var(--color-iconos-quill) !important;
+}
+
+body.modo-oscuro .ql-snow .ql-fill {
+    fill: var(--color-iconos-quill) !important;
+}
+
+body.modo-oscuro .ql-snow .ql-picker {
+    color: var(--color-iconos-quill) !important;
+}
+
+body.modo-oscuro .tarjeta-login,
+body.modo-oscuro .modal-content {
+    background-color: var(--color-menu-lateral);
+    color: var(--color-texto-oscuro);
+}
+
+body.modo-oscuro .form-control {
+    background-color: var(--color-canva-hoja) !important;
+    border: 1px solid var(--color-fondo-global) !important;
+    color: var(--color-texto-oscuro) !important;
+}
+
+body.modo-oscuro .form-control::placeholder {
+    color: var(--color-iconos-quill);
+    opacity: 0.6;
+}
+
+body.modo-oscuro .link-accion {
+    color: var(--color-texto-oscuro) !important;
+}
+
+body.modo-oscuro .text-muted {
+    color: var(--color-iconos-quill) !important;
+    opacity: 0.8;
+}
