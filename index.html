@@ -7,6 +7,9 @@
     <title>Tu Espacio — Tu lugar en el mundo</title>
     <meta name="description" content="Aplicación web minimalista de toma de notas y gestión de tareas, diseñada para la concentración y accesibilidad.">
 
+    <!-- FAVICON -->
+    <link rel="icon" type="image/png" href="./assets/img/favicon/carpinchito.png">
+
     <!-- BOOTSTRAP 5 + ICONOS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -30,11 +33,12 @@
 
     <!-- ENCABEZADO SUPERIOR -->
     <header class="menu-superior px-3 px-md-4 py-2 d-flex justify-content-between align-items-center">
-        <!-- LOGO CARPINCHO -->
+        <!-- LOGO CARPINCHO + SALUDO DINÁMICO -->
         <div class="d-flex align-items-center gap-2">
-            <a href="index.html" class="text-decoration-none">
+            <a href="index.html" class="text-decoration-none d-flex align-items-center">
                 <img src="./assets/img/logos/claro-cerca.png" alt="Logo Tu Espacio" id="logo-app" class="img-fluid">
             </a>
+            <span id="saludo-dia" class="small fw-semibold opacity-75 d-none d-md-inline ms-1"></span>
         </div>
 
         <!-- ACCIONES SUPERIORES -->
@@ -108,12 +112,19 @@
 
         <!-- BARRA LATERAL (TUS NOTAS) -->
         <aside id="menu-lateral" class="barra-lateral col-12 col-md-3 p-3 d-flex flex-column">
-            <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
                 <h3 class="fs-5 fw-bold mb-0">Tus notas</h3>
                 <button id="btn-eliminar-todas" class="btn btn-nota-accion text-danger d-none" title="Eliminar todas las notas" aria-label="Eliminar todas las notas">
                     <i class="bi bi-trash3 fs-6"></i>
                 </button>
             </div>
+
+            <!-- BUSCADOR EN TIEMPO REAL -->
+            <div class="mb-3 position-relative" id="contenedor-busqueda">
+                <input type="text" class="form-control form-control-sm rounded-3 pe-4 input-busqueda" id="input-busqueda-notas" placeholder="Buscar en tus notas..." aria-label="Buscar notas">
+                <i class="bi bi-search position-absolute top-50 end-0 translate-middle-y me-2 text-muted small pe-none"></i>
+            </div>
+
             <ul id="lista-notas" class="list-unstyled flex-grow-1 mb-0 overflow-auto">
                 <!-- Se generan dinámicamente con JavaScript -->
             </ul>
@@ -122,8 +133,31 @@
         <!-- LIENZO CENTRAL PARA EL EDITOR -->
         <section id="lienzo-central" class="lienzo-central col flex-grow-1 p-3 p-md-4 d-none overflow-auto">
             <div id="area-editor" class="editor-texto h-100 p-3 p-md-4 rounded-4 shadow-sm d-flex flex-column gap-2">
-                <div id="barra-quill"></div>
+                <!-- CABECERA DEL EDITOR (QUILL + ACCIONES) -->
+                <div class="d-flex justify-content-between align-items-center pb-2 border-bottom border-opacity-10 flex-wrap gap-2">
+                    <div id="barra-quill" class="flex-grow-1"></div>
+                    <div class="d-flex gap-1 flex-shrink-0">
+                        <button id="btn-copiar-nota" class="btn btn-sm btn-outline-tema rounded-3 px-2 py-1 d-flex align-items-center gap-1" title="Copiar todo el texto">
+                            <i class="bi bi-clipboard"></i> <span class="d-none d-sm-inline">Copiar</span>
+                        </button>
+                        <button id="btn-descargar-nota" class="btn btn-sm btn-outline-tema rounded-3 px-2 py-1 d-flex align-items-center gap-1" title="Descargar como archivo de texto (.txt)">
+                            <i class="bi bi-download"></i> <span class="d-none d-sm-inline">Descargar</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ENTRADA DE TEXTO -->
                 <div id="entrada-texto" class="flex-grow-1 w-100"></div>
+
+                <!-- PIE DEL EDITOR (ESTADÍSTICAS Y GUARDADO) -->
+                <div class="pie-editor d-flex justify-content-between align-items-center pt-2 border-top border-opacity-10 small">
+                    <span id="info-palabras" class="d-flex align-items-center gap-1">
+                        <i class="bi bi-file-text me-1"></i> <span id="texto-conteo">0 palabras • ~0 min lectura</span>
+                    </span>
+                    <span id="estado-guardado" class="d-flex align-items-center gap-1 text-success fw-semibold">
+                        <i class="bi bi-check2"></i> Guardado
+                    </span>
+                </div>
             </div>
         </section>
 

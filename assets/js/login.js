@@ -64,6 +64,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (logoApp) logoApp.src = RUTAS_LOGOS.CLARO;
     }
 
+    // Saludo dinámico según la hora del día
+    aplicarSaludoDinamico();
+
     // Si viene con el hash #registro, abrir directamente la vista de crear cuenta
     if (window.location.hash === '#registro') {
         mostrarVistaRegistro();
@@ -71,6 +74,24 @@ document.addEventListener('DOMContentLoaded', () => {
         mostrarVistaLogin();
     }
 });
+
+function obtenerSaludoSegunHora() {
+    const hora = new Date().getHours();
+    if (hora >= 6 && hora < 13) {
+        return { texto: '¡Buenos días!', icono: '☀️' };
+    } else if (hora >= 13 && hora < 20) {
+        return { texto: '¡Buenas tardes!', icono: '🌤️' };
+    } else {
+        return { texto: '¡Buenas noches!', icono: '🌙' };
+    }
+}
+
+function aplicarSaludoDinamico() {
+    const saludo = obtenerSaludoSegunHora();
+    if (subtituloPantalla) {
+        subtituloPantalla.textContent = `${saludo.texto} ${saludo.icono} Organiza tus ideas en tu lugar en el mundo.`;
+    }
+}
 
 // Escuchar cambios de hash en la URL
 window.addEventListener('hashchange', () => {

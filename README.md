@@ -12,8 +12,9 @@ Desarrollado por: **Milagros Escarlon**
 3. [Toma de Decisiones de Diseño y UX/UI](#-toma-de-decisiones-de-diseño-y-uxui)
 4. [Stack Tecnológico y Decisiones de Desarrollo](#-stack-tecnológico-y-decisiones-de-desarrollo)
 5. [Desafíos Técnicos y Aprendizajes](#-desafíos-técnicos-y-aprendizajes)
-6. [Ideas Descartadas e Iteraciones](#-ideas-descartadas-e-iteraciones)
-7. [Demostración y Enlaces](#-demostración-y-enlaces)
+6. [Nuevas Ideas Implementadas (Calidad de Vida para el Usuario)](#-nuevas-ideas-implementadas-calidad-de-vida-para-el-usuario)
+7. [Ideas Descartadas e Iteraciones](#-ideas-descartadas-e-iteraciones)
+8. [Demostración y Enlaces](#-demostración-y-enlaces)
 
 ---
 
@@ -72,6 +73,20 @@ Cada detalle visual fue consensuado para transmitir calma y reducir la sobrecarg
 * **Comprensión profunda de JavaScript:** Entender a fondo cómo interceptar eventos nativos del navegador y conectar dinámicas de interfaz sin recurrir a código que no pudiera justificar conceptualmente.
 * **Balance Bootstrap vs. CSS:** Encontrar el equilibrio exacto entre el uso de clases predeterminadas y estilos propios sin romper la estética personalizada de la app.
 * **Gestión de estado local:** Primer acercamiento práctico a `LocalStorage` para persistir preferencias del usuario entre distintas vistas.
+
+---
+
+## ✨ Nuevas Ideas Implementadas (Calidad de Vida para el Usuario) 27/08/2026
+
+Con el objetivo de seguir puliendo la experiencia y entregar una herramienta que sea verdaderamente placentera y útil en el día a día, se incorporaron las siguientes mejoras de usabilidad y productividad:
+
+* 🔍 **Buscador en tiempo real:** Campo de búsqueda integrado en la barra lateral que filtra notas al instante tanto por título como por contenido textual, permitiendo ubicar cualquier apunte en segundos.
+* 📑 **Duplicación rápida de notas:** Botón interactivo para clonar notas con un clic, ideal para utilizar notas existentes como plantillas o listas recurrentes.
+* 📋 **Copiar al portapapeles y exportación (.txt):** Acciones directas en la cabecera del editor para copiar el texto plano sin formato o descargar la nota como archivo de texto listo para compartir.
+* 🟢 **Contador de palabras y estado de guardado en vivo:** Pie de estadísticas en el editor que calcula en tiempo real la cantidad de palabras, el tiempo estimado de lectura y muestra la confirmación visual reactiva de `Guardado ✓` en `LocalStorage`.
+* 🗑️ **Vaciado general de notas con confirmación:** Botón para eliminar todas las notas existentes de una sola vez, acompañado de un modal de confirmación amigable y un estado vacío (*Empty State*) reconfortante.
+* 🪟 **Modales personalizados integrados al diseño:** Reemplazo de los diálogos nativos del navegador (`prompt` y `confirm`) por modales estilizados y accesibles para editar títulos, borrar notas y gestionar el límite de notas de invitado (con opciones independientes para *Crear Cuenta* o *Iniciar Sesión*).
+* 🔑 **Acceso flexible y creación de cuenta:** Formulario interactivo en la pantalla de autenticación para alternar entre inicio de sesión (mediante correo o nombre de usuario) y registro con validación.
 
 ---
 

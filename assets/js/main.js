@@ -1,7 +1,7 @@
 /**
  * ==========================================================================
  * TU ESPACIO — SCRIPT PRINCIPAL (main.js)
- * Aplicación de notas minimalista y accesible
+ * Aplicación de notas minimalista, accesible y optimizada
  * ==========================================================================
  */
 
@@ -32,6 +32,7 @@ let notas = [];
 let notaSeleccionadaId = null;
 let notaParaEditarId = null;
 let notaParaEliminarId = null;
+let terminoBusqueda = '';
 let debounceGuardadoTimer = null;
 
 // Configuración de herramientas para el editor Quill
@@ -60,14 +61,21 @@ const opcionCambiarFoto = document.getElementById('opcion-cambiar-foto');
 const divisorMenu = document.getElementById('divisor-menu');
 const opcionLogout = document.getElementById('opcion-logout');
 
-// Barra lateral y acciones de notas
+// Barra lateral y buscador
 const btnOjo = document.getElementById('btn-ojo');
 const iconoOjo = document.getElementById('icono-ojo');
 const menuLateral = document.getElementById('menu-lateral');
+const inputBusqueda = document.getElementById('input-busqueda-notas');
 const btnAnadirNota = document.getElementById('btn-anadir-nota');
 const btnEliminarTodas = document.getElementById('btn-eliminar-todas');
 const listaNotas = document.getElementById('lista-notas');
+
+// Lienzo del editor y herramientas
 const lienzoCentral = document.getElementById('lienzo-central');
+const btnCopiarNota = document.getElementById('btn-copiar-nota');
+const btnDescargarNota = document.getElementById('btn-descargar-nota');
+const textoConteo = document.getElementById('texto-conteo');
+const estadoGuardado = document.getElementById('estado-guardado');
 
 // Alertas flotantes
 const alertaBienvenida = document.getElementById('alerta-bienvenida');
@@ -169,9 +177,32 @@ function esUsuarioLogueado() {
     return estado === 'normal' || estado === 'google';
 }
 
+function obtenerSaludoSegunHora() {
+    const hora = new Date().getHours();
+    if (hora >= 6 && hora < 13) {
+        return { texto: '¡Buenos días!', icono: '☀️' };
+    } else if (hora >= 13 && hora < 20) {
+        return { texto: '¡Buenas tardes!', icono: '🌤️' };
+    } else {
+        return { texto: '¡Buenas noches!', icono: '🌙' };
+    }
+}
+
 function inicializarEstadoUsuario() {
     const logueado = esUsuarioLogueado();
     const avatarGuardado = localStorage.getItem(STORAGE_KEYS.AVATAR);
+    const nombreUsuario = localStorage.getItem(STORAGE_KEYS.NOMBRE_USUARIO);
+    const saludoInfo = obtenerSaludoSegunHora();
+    const saludoEl = document.getElementById('saludo-dia');
+
+    // Renderizar saludo dinámico según la hora y estado
+    if (saludoEl) {
+        if (logueado && nombreUsuario) {
+            saludoEl.innerHTML = `${saludoInfo.texto}, <strong>${escapeHTML(nombreUsuario)}</strong> ${saludoInfo.icono}`;
+        } else {
+            saludoEl.innerHTML = `${saludoInfo.texto} ${saludoInfo.icono}`;
+        }
+    }
 
     if (logueado) {
         // Interfaz para usuario registrado
@@ -236,7 +267,7 @@ function cambiarAvatar(nombreAvatar) {
 }
 
 /**
- * 4.3. GESTIÓN DE NOTAS Y PERSISTENCIA (LOCALSTORAGE)
+ * 4.3. GESTIÓN DE NOTAS, BUSCADOR Y PERSISTENCIA (LOCALSTORAGE)
  */
 function guardarNotasEnStorage() {
     try {
@@ -283,7 +314,21 @@ function renderizarListaNotas() {
         }
     }
 
-    // Estado vacío si no hay notas
+    // Filtrar por término de búsqueda si existe
+    const notasFiltradas = notas.filter(nota => {
+        if (!terminoBusqueda) return true;
+        const busq = terminoBusqueda.toLowerCase();
+        const coincideTitulo = nota.titulo.toLowerCase().includes(busq);
+
+        // Buscar también en el contenido textual
+        const divTemp = document.createElement('div');
+        divTemp.innerHTML = nota.contenido || '';
+        const coincideContenido = divTemp.textContent.toLowerCase().includes(busq);
+
+        return coincideTitulo || coincideContenido;
+    });
+
+    // Estado vacío si no hay notas registradas
     if (notas.length === 0) {
         listaNotas.innerHTML = `
             <li class="text-center py-4 text-muted opacity-75">
@@ -294,7 +339,18 @@ function renderizarListaNotas() {
         return;
     }
 
-    notas.forEach((nota) => {
+    // Estado cuando la búsqueda no arroja resultados
+    if (notasFiltradas.length === 0 && terminoBusqueda) {
+        listaNotas.innerHTML = `
+            <li class="text-center py-4 text-muted opacity-75">
+                <i class="bi bi-search fs-4 d-block mb-1"></i>
+                <span class="small">No se encontraron notas con "<strong>${escapeHTML(terminoBusqueda)}</strong>"</span>
+            </li>
+        `;
+        return;
+    }
+
+    notasFiltradas.forEach((nota) => {
         const li = document.createElement('li');
         li.className = `nota-item d-flex justify-content-between align-items-center p-2 rounded-2 mb-1 ${nota.id === notaSeleccionadaId ? 'activa' : ''}`;
         li.dataset.id = nota.id;
@@ -302,14 +358,24 @@ function renderizarListaNotas() {
         // Título de la nota
         const spanTexto = document.createElement('span');
         spanTexto.className = 'titulo-nota d-flex align-items-center text-truncate me-2';
-        spanTexto.innerHTML = `<i class="bi bi-file-earmark-text me-2 flex-shrink-0"></i><span class="text-truncate">${nota.titulo}</span>`;
+        spanTexto.innerHTML = `<i class="bi bi-file-earmark-text me-2 flex-shrink-0"></i><span class="text-truncate">${escapeHTML(nota.titulo)}</span>`;
         li.appendChild(spanTexto);
 
-        // Contenedor de acciones
+        // Contenedor de acciones (Duplicar, Editar, Borrar)
         const divAcciones = document.createElement('div');
         divAcciones.className = 'd-flex gap-1 flex-shrink-0';
 
-        // Botón Editar Título (Abre modal personalizado)
+        // Botón Duplicar
+        const btnDuplicar = document.createElement('button');
+        btnDuplicar.className = 'btn-nota-accion';
+        btnDuplicar.title = 'Duplicar nota';
+        btnDuplicar.innerHTML = '<i class="bi bi-copy"></i>';
+        btnDuplicar.addEventListener('click', (e) => {
+            e.stopPropagation();
+            duplicarNota(nota.id);
+        });
+
+        // Botón Editar Título
         const btnEditar = document.createElement('button');
         btnEditar.className = 'btn-nota-accion';
         btnEditar.title = 'Editar título';
@@ -319,7 +385,7 @@ function renderizarListaNotas() {
             abrirModalEditarTitulo(nota.id);
         });
 
-        // Botón Borrar (Abre modal personalizado)
+        // Botón Borrar
         const btnBorrar = document.createElement('button');
         btnBorrar.className = 'btn-nota-accion';
         btnBorrar.title = 'Eliminar nota';
@@ -329,6 +395,7 @@ function renderizarListaNotas() {
             abrirModalEliminarNota(nota.id);
         });
 
+        divAcciones.appendChild(btnDuplicar);
         divAcciones.appendChild(btnEditar);
         divAcciones.appendChild(btnBorrar);
         li.appendChild(divAcciones);
@@ -364,6 +431,9 @@ function seleccionarNota(id) {
     // Cargar contenido en Quill de forma segura
     const contenido = nota.contenido || '<p><br></p>';
     editorQuill.clipboard.dangerouslyPasteHTML(contenido);
+
+    // Actualizar contador y estadísticas del editor
+    actualizarEstadisticasYEstado('guardado');
 }
 
 function crearNuevaNota() {
@@ -386,8 +456,114 @@ function crearNuevaNota() {
     seleccionarNota(nuevaNota.id);
 }
 
+function duplicarNota(id) {
+    // Verificar límite de invitado
+    if (!esUsuarioLogueado() && notas.length >= 1) {
+        mostrarModalLimiteInvitado();
+        return;
+    }
+
+    const notaOriginal = notas.find(n => n.id === id);
+    if (!notaOriginal) return;
+
+    const copiaNota = {
+        id: 'nota_' + Date.now(),
+        titulo: `${notaOriginal.titulo} (Copia)`,
+        contenido: notaOriginal.contenido,
+        fechaCreacion: new Date().toISOString()
+    };
+
+    notas.push(copiaNota);
+    guardarNotasEnStorage();
+    renderizarListaNotas();
+    seleccionarNota(copiaNota.id);
+}
+
+function guardarContenidoNotaActual() {
+    if (!notaSeleccionadaId) return;
+
+    const nota = notas.find(n => n.id === notaSeleccionadaId);
+    if (nota) {
+        nota.contenido = editorQuill.getSemanticHTML();
+        guardarNotasEnStorage();
+        actualizarEstadisticasYEstado('guardado');
+    }
+}
+
 /**
- * 4.4. MODALES PERSONALIZADOS DE NOTAS (EDITAR, BORRAR INDIVIDUAL Y BORRAR TODAS)
+ * 4.4. ESTADÍSTICAS Y COPIAR/EXPORTAR NOTA
+ */
+function actualizarEstadisticasYEstado(estado = 'guardado') {
+    // Conteo de palabras y tiempo de lectura
+    const textoPlano = editorQuill.getText().trim();
+    const palabras = textoPlano ? textoPlano.split(/\s+/).filter(w => w.length > 0).length : 0;
+    const minutosLectura = Math.max(1, Math.ceil(palabras / 200));
+
+    if (textoConteo) {
+        const plural = palabras === 1 ? 'palabra' : 'palabras';
+        textoConteo.textContent = `${palabras} ${plural} • ~${palabras > 0 ? minutosLectura : 0} min lectura`;
+    }
+
+    // Estado de guardado en tiempo real
+    if (estadoGuardado) {
+        if (estado === 'guardando') {
+            estadoGuardado.className = 'd-flex align-items-center gap-1 text-warning fw-semibold';
+            estadoGuardado.innerHTML = '<i class="bi bi-arrow-repeat spin-icon"></i> Guardando...';
+        } else {
+            estadoGuardado.className = 'd-flex align-items-center gap-1 text-success fw-semibold';
+            estadoGuardado.innerHTML = '<i class="bi bi-check2"></i> Guardado';
+        }
+    }
+}
+
+function copiarTextoNota() {
+    const textoPlano = editorQuill.getText().trim();
+    if (!textoPlano) return;
+
+    navigator.clipboard.writeText(textoPlano).then(() => {
+        if (btnCopiarNota) {
+            const originalHTML = btnCopiarNota.innerHTML;
+            btnCopiarNota.innerHTML = '<i class="bi bi-check2 text-success"></i> <span class="d-none d-sm-inline">¡Copiado!</span>';
+            setTimeout(() => {
+                btnCopiarNota.innerHTML = originalHTML;
+            }, 2000);
+        }
+    }).catch(err => {
+        console.error('Error al copiar texto:', err);
+    });
+}
+
+function descargarNota() {
+    if (!notaSeleccionadaId) return;
+    const nota = notas.find(n => n.id === notaSeleccionadaId);
+    if (!nota) return;
+
+    const textoPlano = editorQuill.getText();
+    const blob = new Blob([textoPlano], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const nombreArchivo = (nota.titulo || 'nota').replace(/[/\\?%*:|"<>]/g, '_') + '.txt';
+
+    const enlaceDescarga = document.createElement('a');
+    enlaceDescarga.href = url;
+    enlaceDescarga.download = nombreArchivo;
+    document.body.appendChild(enlaceDescarga);
+    enlaceDescarga.click();
+    document.body.removeChild(enlaceDescarga);
+    URL.revokeObjectURL(url);
+}
+
+function escapeHTML(str) {
+    return str.replace(/[&<>'"]/g, tag => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        "'": '&#39;',
+        '"': '&quot;'
+    }[tag] || tag));
+}
+
+/**
+ * 4.5. MODALES PERSONALIZADOS DE NOTAS
  */
 function abrirModalEditarTitulo(id) {
     const nota = notas.find(n => n.id === id);
@@ -434,19 +610,6 @@ function abrirModalEliminarTodas() {
     }
 }
 
-function guardarContenidoNotaActual() {
-    if (!notaSeleccionadaId) return;
-
-    const nota = notas.find(n => n.id === notaSeleccionadaId);
-    if (nota) {
-        nota.contenido = editorQuill.getSemanticHTML();
-        guardarNotasEnStorage();
-    }
-}
-
-/**
- * 4.5. MODAL DE LÍMITE DE INVITADO Y ALERTAS
- */
 function mostrarModalLimiteInvitado() {
     if (!modalLimiteInvitadoInstance && modalLimiteInvitadoEl && typeof bootstrap !== 'undefined') {
         modalLimiteInvitadoInstance = new bootstrap.Modal(modalLimiteInvitadoEl);
@@ -458,23 +621,24 @@ function mostrarModalLimiteInvitado() {
 
 function inicializarAlertas() {
     if (!alertaBienvenida) return;
+    const saludoInfo = obtenerSaludoSegunHora();
 
     if (localStorage.getItem(STORAGE_KEYS.ALERTA_REGISTRO) === 'si') {
         const nombre = localStorage.getItem(STORAGE_KEYS.NOMBRE_USUARIO);
         const mensaje = nombre
-            ? `¡Cuenta creada con éxito! Bienvenido a tu espacio, ${nombre}.`
-            : `¡Cuenta creada con éxito! Bienvenido a tu espacio.`;
+            ? `${saludoInfo.texto} ¡Cuenta creada con éxito! Bienvenido a tu espacio, ${nombre}. ${saludoInfo.icono}`
+            : `${saludoInfo.texto} ¡Cuenta creada con éxito! Bienvenido a tu espacio. ${saludoInfo.icono}`;
         mostrarMensajeAlerta(`<i class="bi bi-check-circle-fill me-2"></i> ${mensaje}`, 'alert-success');
         localStorage.removeItem(STORAGE_KEYS.ALERTA_REGISTRO);
     } else if (localStorage.getItem(STORAGE_KEYS.ALERTA_LOGIN) === 'si') {
         const nombre = localStorage.getItem(STORAGE_KEYS.NOMBRE_USUARIO);
         const mensaje = nombre
-            ? `¡Iniciaste sesión con éxito! Bienvenido a tu espacio, ${nombre}.`
-            : `¡Iniciaste sesión con éxito! Bienvenido a tu espacio.`;
+            ? `${saludoInfo.texto} ¡Iniciaste sesión con éxito! Bienvenido a tu espacio, ${nombre}. ${saludoInfo.icono}`
+            : `${saludoInfo.texto} ¡Iniciaste sesión con éxito! Bienvenido a tu espacio. ${saludoInfo.icono}`;
         mostrarMensajeAlerta(`<i class="bi bi-check-circle-fill me-2"></i> ${mensaje}`, 'alert-success');
         localStorage.removeItem(STORAGE_KEYS.ALERTA_LOGIN);
     } else if (localStorage.getItem(STORAGE_KEYS.ALERTA_GOOGLE) === 'si') {
-        mostrarMensajeAlerta('<i class="bi bi-google me-2"></i> ¡Iniciaste sesión con Google con éxito! Bienvenido.', 'alert-success');
+        mostrarMensajeAlerta(`${saludoInfo.texto} <i class="bi bi-google mx-1"></i> ¡Iniciaste sesión con Google con éxito! ${saludoInfo.icono}`, 'alert-success');
         localStorage.removeItem(STORAGE_KEYS.ALERTA_GOOGLE);
     } else if (localStorage.getItem(STORAGE_KEYS.ALERTA_LOGOUT) === 'si') {
         mostrarMensajeAlerta('<i class="bi bi-info-circle-fill me-2"></i> Has cerrado sesión correctamente. Volviste al modo invitado.', 'alert-info');
@@ -511,6 +675,14 @@ if (btnOjo && menuLateral && iconoOjo) {
     });
 }
 
+// Buscador de notas en tiempo real
+if (inputBusqueda) {
+    inputBusqueda.addEventListener('input', (e) => {
+        terminoBusqueda = e.target.value.trim();
+        renderizarListaNotas();
+    });
+}
+
 // Botón "Añadir nuevo +"
 if (btnAnadirNota) {
     btnAnadirNota.addEventListener('click', crearNuevaNota);
@@ -538,11 +710,21 @@ if (btnConfirmarEliminarTodas) {
     });
 }
 
-// Guardado automático del contenido de Quill con debounce
+// Guardado automático del contenido de Quill con debounce y actualización de estado
 editorQuill.on('text-change', () => {
+    actualizarEstadisticasYEstado('guardando');
     clearTimeout(debounceGuardadoTimer);
     debounceGuardadoTimer = setTimeout(guardarContenidoNotaActual, 300);
 });
+
+// Botones de acciones del editor
+if (btnCopiarNota) {
+    btnCopiarNota.addEventListener('click', copiarTextoNota);
+}
+
+if (btnDescargarNota) {
+    btnDescargarNota.addEventListener('click', descargarNota);
+}
 
 // Guardar cambio de título desde el modal
 if (formEditarTitulo) {

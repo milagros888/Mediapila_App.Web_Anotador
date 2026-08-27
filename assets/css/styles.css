@@ -136,8 +136,22 @@ body {
 }
 
 /* ==========================================================================
-   4. LISTA DE NOTAS
+   4. LISTA DE NOTAS Y BUSCADOR
    ========================================================================== */
+.input-busqueda {
+    background-color: rgba(255, 255, 255, 0.45);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    color: var(--color-componentes);
+    transition: all 0.2s ease;
+}
+
+.input-busqueda:focus {
+    background-color: rgba(255, 255, 255, 0.8);
+    border-color: var(--color-componentes);
+    box-shadow: none;
+    color: var(--color-componentes);
+}
+
 .nota-item {
     color: var(--color-componentes);
     cursor: pointer;
@@ -223,6 +237,23 @@ body {
     font-style: normal !important;
 }
 
+/* Pie del editor (conteo y guardado) */
+.pie-editor {
+    color: var(--color-componentes);
+    border-color: var(--color-borde-sutil) !important;
+    opacity: 0.9;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.spin-icon {
+    animation: spin 1s linear infinite;
+    display: inline-block;
+}
+
 /* ==========================================================================
    6. PANTALLA DE LOGIN Y MODALES
    ========================================================================== */
@@ -287,8 +318,21 @@ body.modo-oscuro .badge-invitado,
 body.modo-oscuro .modal-content,
 body.modo-oscuro .etiqueta-input,
 body.modo-oscuro .titulo-bienvenida,
-body.modo-oscuro .boton-invitado {
+body.modo-oscuro .boton-invitado,
+body.modo-oscuro .pie-editor {
     color: var(--color-texto-oscuro) !important;
+}
+
+body.modo-oscuro .input-busqueda {
+    background-color: var(--color-canva-hoja);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--color-texto-oscuro);
+}
+
+body.modo-oscuro .input-busqueda:focus {
+    background-color: var(--color-fondo-global);
+    border-color: var(--color-texto-oscuro);
+    color: var(--color-texto-oscuro);
 }
 
 body.modo-oscuro .btn-secondary {
