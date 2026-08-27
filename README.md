@@ -101,5 +101,5 @@ En conjunto con el feedback y bajo la premisa de mantener un código comprensibl
 
 ## 🔗 Enlaces del Proyecto
 
-* 🌐 **Sitio Web / Demo:** `[Inserta aquí tu enlace desplegado]`
-* 🎨 **Tablero de Figma:** `[Inserta aquí tu enlace a Figma]`
+* 🌐 **[Sitio Web / Demo](https://mediapila-app-web-anotador.vercel.app/)**
+* 🎨 **[Tablero de Figma](https://www.figma.com/design/VW9CDGClf5v8F4nRqEwCy8/Entregable-2-APPWEB?node-id=8-18&t=ngE1tCM0k079w5qQ-1)**
